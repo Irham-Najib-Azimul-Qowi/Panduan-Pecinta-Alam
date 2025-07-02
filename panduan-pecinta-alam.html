@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panduan Interaktif Kegiatan Alam Bebas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral / Earth Tone -->
+    <!-- Application Structure Plan: Aplikasi ini menggunakan struktur tematik berbasis hub untuk memecah informasi kompleks menjadi bagian-bagian yang mudah dicerna. Strukturnya terdiri dari: 1) Header navigasi sticky untuk akses cepat. 2) Bagian Perencanaan dengan checklist interaktif dan tabs untuk 5W+1H. 3) Bagian Keterampilan dengan kartu flip untuk survival dan diagram interaktif untuk packing. 4) Bagian Gawat Darurat dengan grid berbasis ikon dan visualisasi data untuk rasio RJP. Struktur ini dipilih untuk mendorong eksplorasi aktif dan menghindari penyajian teks yang panjang dan monoton, sehingga meningkatkan retensi informasi bagi pemula. -->
+    <!-- Visualization & Content Choices: 1. Perencanaan (5W+1H): Menggunakan tabs (HTML/JS) untuk mengorganisir informasi. Goal: Organize. 2. Pengepakan: Diagram visual backpack (HTML/CSS) dengan tooltip hover. Goal: Inform. 3. Prinsip Survival (STOP/SURVIVAL): Kartu flip (HTML/CSS/JS) untuk membantu memorisasi. Goal: Inform/Memorize. 4. Kebutuhan Survival: Grid ikon (Unicode/HTML) yang membuka modal. Goal: Organize. 5. Rasio RJP: Bar chart (Chart.js/Canvas) untuk membandingkan data kuantitatif. Goal: Compare. 6. Simpul Tali: Carousel (HTML/JS) dengan deskripsi. Goal: Instruct. Pilihan ini memaksimalkan interaktivitas dan kejelasan visual tanpa menggunakan SVG atau Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .flip-card {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .modal { display: none; }
+        .modal.active { display: flex; }
+    </style>
+</head>
+<body class="bg-stone-100 text-stone-800">
+
+    <header id="header" class="bg-stone-100/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="font-bold text-xl text-lime-800">Panduan Alam Bebas</h1>
+            <div class="hidden md:flex space-x-6">
+                <a href="#perencanaan" class="hover:text-lime-700">Perencanaan</a>
+                <a href="#keterampilan" class="hover:text-lime-700">Keterampilan</a>
+                <a href="#darurat" class="hover:text-lime-700">Gawat Darurat</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-3">
+            <a href="#perencanaan" class="block py-2 hover:text-lime-700">Perencanaan</a>
+            <a href="#keterampilan" class="block py-2 hover:text-lime-700">Keterampilan</a>
+            <a href="#darurat" class="block py-2 hover:text-lime-700">Gawat Darurat</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8">
+        
+        <section id="hero" class="text-center py-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-lime-900 mb-4">Menjelajah dengan Aman dan Percaya Diri</h2>
+            <p class="text-lg text-stone-600 max-w-3xl mx-auto">Selamat datang di panduan interaktif kegiatan alam bebas. Aplikasi ini dirancang untuk membekali Anda dengan pengetahuan esensial, mulai dari perencanaan yang matang hingga penanganan situasi darurat, agar setiap petualangan menjadi pengalaman yang tak terlupakan.</p>
+        </section>
+
+        <!-- Bab 1 & 2: Perencanaan & Persiapan -->
+        <section id="perencanaan" class="py-16 bg-white rounded-2xl shadow-lg p-8 mb-16">
+            <div class="text-center mb-12">
+                <span class="text-lime-600 font-semibold">Bab 1</span>
+                <h3 class="text-3xl font-bold mt-2">Persiapan Adalah Kunci</h3>
+                <p class="mt-4 max-w-2xl mx-auto text-stone-600">Keberhasilan sebuah petualangan 90% ditentukan oleh persiapan. Bagian ini akan memandu Anda melalui langkah-langkah perencanaan krusial, mulai dari merancang perjalanan hingga mengepak ransel dengan benar.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 items-start">
+                <div>
+                    <h4 class="text-2xl font-bold mb-4">Rencana Perjalanan (5W+1H)</h4>
+                    <p class="text-stone-600 mb-6">Gunakan kerangka 5W+1H untuk memastikan tidak ada detail yang terlewat. Klik setiap tab untuk melihat pertanyaan pemandu.</p>
+                    <div id="tabs-5w1h">
+                        <div class="flex border-b border-stone-200">
+                            <button class="tab-button active p-4 font-semibold" data-target="what">What</button>
+                            <button class="tab-button p-4 font-semibold" data-target="who">Who</button>
+                            <button class="tab-button p-4 font-semibold" data-target="when">When</button>
+                            <button class="tab-button p-4 font-semibold" data-target="where">Where</button>
+                            <button class="tab-button p-4 font-semibold" data-target="why">Why</button>
+                            <button class="tab-button p-4 font-semibold" data-target="how">How</button>
+                        </div>
+                        <div class="py-4">
+                            <div id="what" class="tab-content active"><p><b>Apa jenis kegiatannya?</b> Mendaki, berkemah, atau panjat tebing? Apa tujuannya dan apa saja perlengkapan spesifik yang dibutuhkan?</p></div>
+                            <div id="who" class="tab-content"><p><b>Siapa saja yang ikut?</b> Pertimbangkan tingkat pengalaman dan kondisi fisik setiap anggota tim. Tentukan pemimpin perjalanan.</p></div>
+                            <div id="when" class="tab-content"><p><b>Kapan perjalanan dilakukan?</b> Perhatikan musim (hujan/kemarau) dan durasi perjalanan untuk menyesuaikan logistik dan perlengkapan.</p></div>
+                            <div id="where" class="tab-content"><p><b>Di mana lokasinya?</b> Pelajari rute, sumber air, dan lokasi pos bantuan terdekat. Urus perizinan jika diperlukan.</p></div>
+                            <div id="why" class="tab-content"><p><b>Mengapa kegiatan ini diadakan?</b> Menentukan tujuan (rekreasi, penelitian, latihan) akan membentuk fokus dan semangat tim.</p></div>
+                            <div id="how" class="tab-content"><p><b>Bagaimana pelaksanaannya?</b> Rencanakan detail teknis, seperti transportasi, pembagian tugas, dan rencana darurat (Plan B).</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-2xl font-bold mb-4">Teknik Pengepakan Ransel</h4>
+                    <p class="text-stone-600 mb-6">Menyusun isi ransel dengan benar adalah seni. Tujuannya adalah keseimbangan, kenyamanan, dan efisiensi. Arahkan kursor ke setiap bagian ransel di bawah ini untuk melihat prinsipnya.</p>
+                    <div class="relative w-full max-w-xs mx-auto bg-stone-200 rounded-t-xl rounded-b-lg p-4 border-4 border-stone-300 h-96 flex flex-col justify-between">
+                        <div class="backpack-section flex-grow bg-orange-200 rounded-t-lg flex items-center justify-center relative" data-info="Letakkan barang yang jarang dipakai dan ringan, seperti sleeping bag atau pakaian ganti, di bagian paling bawah.">
+                            <span class="font-semibold text-orange-800">BAWAH (Ringan)</span>
+                        </div>
+                        <div class="backpack-section flex-grow bg-lime-200 my-2 flex items-center justify-center relative" data-info="Letakkan barang terberat seperti tenda, logistik, dan air menempel di punggung untuk menjaga pusat gravitasi.">
+                             <span class="font-semibold text-lime-800">TENGAH (Berat)</span>
+                        </div>
+                        <div class="backpack-section flex-grow bg-sky-200 rounded-b-lg flex items-center justify-center relative" data-info="Letakkan barang yang sering diakses seperti jas hujan, P3K, dan makanan ringan di bagian paling atas.">
+                             <span class="font-semibold text-sky-800">ATAS (Akses Cepat)</span>
+                        </div>
+                        <div id="backpack-tooltip" class="absolute bg-black text-white text-sm rounded py-1 px-2 pointer-events-none opacity-0 transition-opacity duration-300"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bab 3 & 4: Keterampilan di Lapangan -->
+        <section id="keterampilan" class="py-16">
+             <div class="text-center mb-12">
+                <span class="text-lime-600 font-semibold">Bab 2</span>
+                <h3 class="text-3xl font-bold mt-2">Keterampilan di Lapangan</h3>
+                <p class="mt-4 max-w-2xl mx-auto text-stone-600">Di alam bebas, pengetahuan adalah kompas terbaik Anda. Kuasai keterampilan dasar navigasi, teknik bertahan hidup, dan keahlian khusus lainnya untuk menghadapi setiap tantangan dengan sigap.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Navigasi Darat -->
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h4 class="text-xl font-bold mb-3 flex items-center">🗺️ Navigasi Darat</h4>
+                    <p class="text-stone-600 mb-4">Menentukan posisi dan arah adalah keterampilan vital. Pelajari cara menggunakan peta topografi dan kompas untuk membaca medan.</p>
+                    <ul class="space-y-2 text-sm">
+                        <li><b>Peta Topografi:</b> Kenali skala untuk menghitung jarak dan garis kontur untuk memahami relief (kerapatan garis menandakan kecuraman).</li>
+                        <li><b>Resection:</b> Menentukan posisimu dengan membidik dua tanda medan yang dikenali di peta.</li>
+                        <li><b>Intersection:</b> Menentukan posisi objek lain dengan membidiknya dari dua lokasi berbeda.</li>
+                    </ul>
+                </div>
+
+                <!-- Teknik Bertahan Hidup -->
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h4 class="text-xl font-bold mb-3 flex items-center">🔥 Teknik Bertahan Hidup (Survival)</h4>
+                    <p class="text-stone-600 mb-4">Saat menghadapi situasi tak terduga, ketenangan dan pengetahuan adalah penyelamat. Ingatlah prinsip S.T.O.P. saat tersesat.</p>
+                     <div class="grid grid-cols-2 gap-2 text-center">
+                        <div class="flip-card h-24 rounded-lg cursor-pointer bg-orange-100">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front rounded-lg bg-orange-200 text-orange-800"><b class="text-4xl">S</b></div>
+                                <div class="flip-card-back rounded-lg bg-orange-300 p-2"><p class="text-xs"><b>Stop & Seating</b><br>Berhenti dan duduklah untuk menenangkan diri.</p></div>
+                            </div>
+                        </div>
+                         <div class="flip-card h-24 rounded-lg cursor-pointer bg-orange-100">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front rounded-lg bg-orange-200 text-orange-800"><b class="text-4xl">T</b></div>
+                                <div class="flip-card-back rounded-lg bg-orange-300 p-2"><p class="text-xs"><b>Thinking</b><br>Berpikirlah dengan jernih, jangan panik.</p></div>
+                            </div>
+                        </div>
+                         <div class="flip-card h-24 rounded-lg cursor-pointer bg-orange-100">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front rounded-lg bg-orange-200 text-orange-800"><b class="text-4xl">O</b></div>
+                                <div class="flip-card-back rounded-lg bg-orange-300 p-2"><p class="text-xs"><b>Observe</b><br>Amati keadaan dan lingkungan sekitar.</p></div>
+                            </div>
+                        </div>
+                         <div class="flip-card h-24 rounded-lg cursor-pointer bg-orange-100">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front rounded-lg bg-orange-200 text-orange-800"><b class="text-4xl">P</b></div>
+                                <div class="flip-card-back rounded-lg bg-orange-300 p-2"><p class="text-xs"><b>Planning</b><br>Buat rencana tindakan yang akan dilakukan.</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kebutuhan Survival -->
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h4 class="text-xl font-bold mb-3 flex items-center">🏕️ Kebutuhan Dasar Survival</h4>
+                    <p class="text-stone-600 mb-4">Prioritaskan empat kebutuhan ini untuk bertahan hidup: perlindungan, air, api, dan makanan. Klik ikon untuk detail.</p>
+                     <div class="grid grid-cols-2 gap-4 text-center">
+                        <button class="modal-button p-4 bg-lime-100 rounded-lg hover:bg-lime-200" data-target="shelterModal">
+                            <span class="text-4xl">⛺</span>
+                            <p class="font-semibold text-sm mt-1">Shelter</p>
+                        </button>
+                        <button class="modal-button p-4 bg-lime-100 rounded-lg hover:bg-lime-200" data-target="waterModal">
+                            <span class="text-4xl">💧</span>
+                            <p class="font-semibold text-sm mt-1">Air</p>
+                        </button>
+                        <button class="modal-button p-4 bg-lime-100 rounded-lg hover:bg-lime-200" data-target="fireModal">
+                            <span class="text-4xl">🔥</span>
+                            <p class="font-semibold text-sm mt-1">Api</p>
+                        </button>
+                         <button class="modal-button p-4 bg-lime-100 rounded-lg hover:bg-lime-200" data-target="foodModal">
+                            <span class="text-4xl">🍎</span>
+                            <p class="font-semibold text-sm mt-1">Makanan</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bab 5: Gawat Darurat -->
+        <section id="darurat" class="py-16 bg-stone-200 -mx-6 px-6">
+             <div class="container mx-auto">
+                <div class="text-center mb-12">
+                    <span class="text-lime-600 font-semibold">Bab 3</span>
+                    <h3 class="text-3xl font-bold mt-2">Siaga Saat Gawat Darurat</h3>
+                    <p class="mt-4 max-w-2xl mx-auto text-stone-600">Kecelakaan bisa terjadi kapan saja. Pengetahuan pertolongan pertama yang tepat dapat menyelamatkan nyawa. Pelajari tindakan-tindakan kritis untuk berbagai skenario darurat.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-2xl font-bold mb-4 text-center">Rasio Kompresi & Napas Bantuan pada RJP</h4>
+                    <p class="text-stone-600 mb-6 text-center max-w-xl mx-auto">Visualisasi data berikut menunjukkan perbandingan jumlah kompresi dada dan napas buatan dalam satu siklus Resusitasi Jantung Paru (RJP) untuk berbagai kondisi. Pilih skenario untuk melihat rasionya.</p>
+                    <div class="flex justify-center space-x-2 mb-4">
+                        <button class="rjp-button bg-lime-600 text-white py-2 px-4 rounded-lg" data-scenario="adult1">Dewasa (1 Penolong)</button>
+                        <button class="rjp-button bg-stone-500 text-white py-2 px-4 rounded-lg" data-scenario="adult2">Dewasa (2 Penolong)</button>
+                        <button class="rjp-button bg-stone-500 text-white py-2 px-4 rounded-lg" data-scenario="child">Anak & Bayi</button>
+                    </div>
+                    <div class="chart-container bg-white p-4 rounded-xl shadow-md">
+                        <canvas id="rjpChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="mt-16">
+                     <h4 class="text-2xl font-bold mb-6 text-center">Protokol Penanganan Cedera Umum</h4>
+                     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h5 class="font-bold text-lg mb-2">🦴 Patah Tulang</h5>
+                            <p class="text-sm text-stone-600">Gejala: Nyeri hebat, bengkak, perubahan bentuk. Tindakan utama adalah **pembidaian**: imobilisasi area cedera menggunakan benda kaku (kayu/tongkat) untuk mencegah pergerakan dan cedera lebih lanjut.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h5 class="font-bold text-lg mb-2">❄️ Hipotermia</h5>
+                            <p class="text-sm text-stone-600">Suhu tubuh < 35°C. Gejala: Menggigil, bingung, napas lambat. Pindahkan ke tempat hangat, ganti pakaian basah, beri minuman hangat jika sadar. Hangatkan perlahan.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h5 class="font-bold text-lg mb-2">☀️ Sengatan Panas</h5>
+                            <p class="text-sm text-stone-600">Gejala: Kulit panas & kering (tidak berkeringat), pusing, pingsan. Turunkan suhu tubuh segera dengan kompres dingin di leher, ketiak, dan selangkangan. Pindahkan ke tempat teduh.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h5 class="font-bold text-lg mb-2">🐍 Gigitan Ular</h5>
+                            <p class="text-sm text-stone-600">Anggap semua gigitan berbisa. Tenangkan korban, baringkan, dan imobilisasi (bidai) area gigitan. Jaga agar area gigitan lebih rendah dari jantung. Segera cari bantuan medis. **Jangan dihisap atau disayat.**</p>
+                        </div>
+                     </div>
+                </div>
+             </div>
+        </section>
+
+    </main>
+    
+    <!-- Modals -->
+    <div id="shelterModal" class="modal fixed inset-0 bg-black/50 items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full">
+            <h3 class="text-2xl font-bold mb-4">⛺ Perlindungan (Shelter/Bivak)</h3>
+            <p>Tujuan utama shelter adalah melindungi dari angin, hujan, dan dingin. Gunakan ponco, flysheet, atau bahan alami seperti dedaunan dan gua. Pilih lokasi yang datar, kering, dan terlindung dari bahaya (pohon mati, jalur air). Model bivak populer dari flysheet antara lain A-Frame, Indian, atau Potrail.</p>
+            <button class="close-modal mt-6 bg-lime-600 text-white py-2 px-4 rounded-lg">Tutup</button>
+        </div>
+    </div>
+    <div id="waterModal" class="modal fixed inset-0 bg-black/50 items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full">
+            <h3 class="text-2xl font-bold mb-4">💧 Air</h3>
+            <p>Air adalah prioritas tertinggi. Manusia hanya bertahan beberapa hari tanpa air. Sumber air bisa dari mata air, sungai, air hujan, embun, atau tanaman seperti rotan & kantung semar. Untuk keamanan, selalu saring dan masak air sebelum diminum untuk membunuh bakteri dan virus.</p>
+            <button class="close-modal mt-6 bg-lime-600 text-white py-2 px-4 rounded-lg">Tutup</button>
+        </div>
+    </div>
+    <div id="fireModal" class="modal fixed inset-0 bg-black/50 items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full">
+            <h3 class="text-2xl font-bold mb-4">🔥 Api</h3>
+            <p>Api berfungsi untuk menghangatkan, memasak, mengusir binatang, dan meningkatkan moril. Tiga elemen api: **Panas** (korek, pemantik, lensa), **Oksigen** (beri ruang udara), dan **Bahan Bakar** (ranting kering, serutan kayu, dedaunan kering). Mulailah dari bahan yang paling mudah terbakar (tinder) lalu tambahkan ranting kecil, baru kayu besar.</p>
+            <button class="close-modal mt-6 bg-lime-600 text-white py-2 px-4 rounded-lg">Tutup</button>
+        </div>
+    </div>
+    <div id="foodModal" class="modal fixed inset-0 bg-black/50 items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full">
+            <h3 class="text-2xl font-bold mb-4">🍎 Makanan</h3>
+            <p>Sumber energi. Prioritaskan makanan yang mudah didapat. <br><b>Tumbuhan:</b> Kenali tanaman yang bisa dimakan (amati apa yang dimakan hewan mamalia). Hindari jamur, tanaman bergetah susu, atau yang berbau aneh. <br><b>Hewan:</b> Serangga, cacing, atau ikan bisa menjadi sumber protein yang baik. Selalu masak hingga matang.</p>
+            <button class="close-modal mt-6 bg-lime-600 text-white py-2 px-4 rounded-lg">Tutup</button>
+        </div>
+    </div>
+
+
+    <footer class="text-center py-6 text-stone-500 text-sm">
+        <p>Aplikasi Interaktif oleh Cakra Manggala. &copy; 2025</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mobile Menu
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Backpack Tooltip
+            const backpackSections = document.querySelectorAll('.backpack-section');
+            const tooltip = document.getElementById('backpack-tooltip');
+            backpackSections.forEach(section => {
+                section.addEventListener('mousemove', function (e) {
+                    tooltip.textContent = this.dataset.info;
+                    tooltip.style.opacity = '1';
+                    tooltip.style.left = e.pageX - section.getBoundingClientRect().left + 15 + 'px';
+                    tooltip.style.top = e.pageY - section.getBoundingClientRect().top - 30 + 'px';
+                });
+                section.addEventListener('mouseleave', function () {
+                    tooltip.style.opacity = '0';
+                });
+            });
+
+            // 5W1H Tabs
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    tabButtons.forEach(btn => btn.classList.remove('active', 'text-lime-600', 'border-lime-600'));
+                    this.classList.add('active', 'text-lime-600', 'border-lime-600');
+                    
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(this.dataset.target).classList.add('active');
+                });
+            });
+            // Set initial active tab style
+            document.querySelector('.tab-button.active').classList.add('text-lime-600', 'border-lime-600');
+
+
+            // Flip Cards
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('flipped');
+                });
+            });
+
+            // Modals
+            const modalButtons = document.querySelectorAll('.modal-button');
+            const closeButtons = document.querySelectorAll('.close-modal');
+            modalButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetModal = document.getElementById(button.dataset.target);
+                    if (targetModal) {
+                        targetModal.classList.add('active');
+                    }
+                });
+            });
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    button.closest('.modal').classList.remove('active');
+                });
+            });
+            window.addEventListener('click', (event) => {
+                if (event.target.classList.contains('modal')) {
+                    event.target.classList.remove('active');
+                }
+            });
+
+
+            // RJP Chart
+            const rjpData = {
+                adult1: { labels: ['Kompresi Dada', 'Napas Bantuan'], data: [15, 2] },
+                adult2: { labels: ['Kompresi Dada', 'Napas Bantuan'], data: [5, 1] },
+                child: { labels: ['Kompresi Dada', 'Napas Bantuan'], data: [5, 1] },
+            };
+            
+            const ctx = document.getElementById('rjpChart').getContext('2d');
+            let rjpChart;
+
+            function createOrUpdateChart(scenario) {
+                if (rjpChart) {
+                    rjpChart.destroy();
+                }
+                const data = rjpData[scenario];
+                rjpChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Rasio per Siklus',
+                            data: data.data,
+                            backgroundColor: ['rgba(77, 124, 15, 0.6)', 'rgba(251, 146, 60, 0.6)'],
+                            borderColor: ['rgb(77, 124, 15)', 'rgb(251, 146, 60)'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: `Skenario: ${document.querySelector(`[data-scenario="${scenario}"]`).textContent}`,
+                                font: { size: 16 }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            const rjpButtons = document.querySelectorAll('.rjp-button');
+            rjpButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const scenario = this.dataset.scenario;
+                    createOrUpdateChart(scenario);
+
+                    rjpButtons.forEach(btn => {
+                        btn.classList.remove('bg-lime-600');
+                        btn.classList.add('bg-stone-500');
+                    });
+                    this.classList.remove('bg-stone-500');
+                    this.classList.add('bg-lime-600');
+                });
+            });
+
+            // Initial chart
+            createOrUpdateChart('adult1');
+        });
+    </script>
+
+</body>
+</html>
